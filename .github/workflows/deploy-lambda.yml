@@ -53,7 +53,3 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve tfplan
 
-      # 9. Fazer upload do código para o S3
-      - name: Fazer upload do código para o S3
-        run: |
-          aws s3 cp lambda/cpf-validator.zip s3://lambda-code-bucket-${{ github.ref_name }}/cpf-validator.zip
