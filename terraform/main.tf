@@ -93,7 +93,7 @@ resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
         Sid       = "AllowWriteForLambda",
         Effect    = "Allow",
         Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/lambda_execution_role"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/lambda_execution_role_1"
         },
         Action    = "s3:PutObject",
         Resource  = "${aws_s3_bucket.lambda_bucket.arn}/*"
@@ -103,7 +103,7 @@ resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
 }
 
 resource "aws_iam_role" "lambda_role" {
-  name = "lambda_execution_role"
+  name = "lambda_execution_role_1"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
