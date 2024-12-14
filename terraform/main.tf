@@ -78,12 +78,25 @@ resource "aws_s3_bucket" "lambda_bucket" {
   depends_on = [random_string.suffix]
 }
 
-resource "aws_s3_bucket_acl" "lambda_bucket_acl" {
+resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
   bucket = aws_s3_bucket.lambda_bucket.id
-  acl    = "private"
 
-  depends_on = [aws_s3_bucket.lambda_bucket]
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "AllowWriteForLambda",
+        Effect    = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LambdaExecutionRole"
+        },
+        Action    = "s3:PutObject",
+        Resource  = "${aws_s3_bucket.lambda_bucket.arn}/*"
+      }
+    ]
+  })
 }
+
 
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_execution_role"
