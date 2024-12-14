@@ -154,7 +154,7 @@ resource "aws_iam_role_policy_attachment" "lambda_execution_policy_1_attachment"
 resource "aws_lambda_function" "cpf_validator" {
   function_name = "cpf-validator-lambda"
   role          = aws_iam_role.lambda_role.arn
-  handler       = "lambda_function.lambda_handler"
+  handler       = "cpf-validator.lambda_handler"
   runtime       = "python3.9"
   s3_bucket     = aws_s3_bucket.lambda_bucket.bucket
   s3_key        = aws_s3_object.lambda_code.key
