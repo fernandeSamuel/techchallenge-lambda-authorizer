@@ -1,3 +1,4 @@
+
 resource "aws_api_gateway_rest_api" "example" {
   name        = "API Gateway Test"
   description = "API Gateway created from OpenAPI spec"
@@ -56,7 +57,7 @@ resource "aws_api_gateway_stage" "example_stage" {
   description   = "Development stage for the API Gateway"
 
   variables = {
-    example_variable = "example_value" # Variáveis de ambiente opcionais
+    example_variable = "example_value"
   }
 
   depends_on = [aws_api_gateway_deployment.example]
@@ -65,7 +66,7 @@ resource "aws_api_gateway_stage" "example_stage" {
 resource "random_string" "suffix" {
   length  = 8
   special = false
-  upper = false
+  upper   = false
 }
 
 resource "aws_s3_bucket" "lambda_bucket" {
@@ -74,8 +75,12 @@ resource "aws_s3_bucket" "lambda_bucket" {
   tags = {
     Name = "LambdaCodeBucket"
   }
+}
 
-  depends_on = [random_string.suffix]
+resource "aws_s3_object" "lambda_code" {
+  bucket = aws_s3_bucket.lambda_bucket.id
+  key    = "cpf-validator.zip"
+  source = "cpf-validator.zip"
 }
 
 resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
@@ -88,7 +93,7 @@ resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
         Sid       = "AllowWriteForLambda",
         Effect    = "Allow",
         Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LambdaExecutionRole"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/lambda_execution_role"
         },
         Action    = "s3:PutObject",
         Resource  = "${aws_s3_bucket.lambda_bucket.arn}/*"
@@ -96,7 +101,6 @@ resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
     ]
   })
 }
-
 
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_execution_role"
@@ -118,7 +122,7 @@ resource "aws_iam_policy" "lambda_execution_policy" {
   name        = "lambda_execution_policy"
   description = "Policy for Lambda basic execution"
   policy      = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
         Effect   = "Allow"
@@ -146,11 +150,12 @@ resource "aws_lambda_function" "cpf_validator" {
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"
   s3_bucket     = aws_s3_bucket.lambda_bucket.bucket
-  s3_key        = "cpf-validator.zip"
+  s3_key        = aws_s3_object.lambda_code.key
   source_code_hash = filebase64sha256("cpf-validator.zip")
 
   depends_on = [
     aws_s3_bucket.lambda_bucket,
+    aws_s3_object.lambda_code,
     aws_iam_role.lambda_role,
     aws_iam_role_policy_attachment.lambda_execution_policy_attachment
   ]
