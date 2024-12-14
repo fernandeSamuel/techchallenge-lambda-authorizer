@@ -118,8 +118,8 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-resource "aws_iam_policy" "lambda_execution_policy" {
-  name        = "lambda_execution_policy"
+resource "aws_iam_policy" "lambda_execution_policy_1" {
+  name        = "lambda_execution_policy_1"
   description = "Policy for Lambda basic execution"
   policy      = jsonencode({
     Version = "2012-10-17",
@@ -137,11 +137,11 @@ resource "aws_iam_policy" "lambda_execution_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_execution_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "lambda_execution_policy_1_attachment" {
   role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_execution_policy.arn
+  policy_arn = aws_iam_policy.lambda_execution_policy_1.arn
 
-  depends_on = [aws_iam_role.lambda_role, aws_iam_policy.lambda_execution_policy]
+  depends_on = [aws_iam_role.lambda_role, aws_iam_policy.lambda_execution_policy_1]
 }
 
 resource "aws_lambda_function" "cpf_validator" {
@@ -157,6 +157,6 @@ resource "aws_lambda_function" "cpf_validator" {
     aws_s3_bucket.lambda_bucket,
     aws_s3_object.lambda_code,
     aws_iam_role.lambda_role,
-    aws_iam_role_policy_attachment.lambda_execution_policy_attachment
+    aws_iam_role_policy_attachment.lambda_execution_policy_1_attachment
   ]
 }

@@ -48,7 +48,7 @@ output "lambda_role_name" {
 }
 
 # Outputs da IAM Policy Customizada
-output "lambda_execution_policy_arn" {
+output "lambda_execution_policy_1_arn" {
   description = "ARN da policy customizada para execução da Lambda"
-  value       = aws_iam_policy.lambda_execution_policy.arn
+  value       = aws_iam_policy.lambda_execution_policy_1.arn
 }
