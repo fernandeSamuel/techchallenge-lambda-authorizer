@@ -1,4 +1,3 @@
-
 resource "aws_api_gateway_rest_api" "example" {
   name        = "API Gateway Test"
   description = "API Gateway created from OpenAPI spec"
@@ -21,6 +20,14 @@ resource "aws_api_gateway_authorizer" "lambda_authorizer" {
   authorizer_result_ttl_in_seconds = 0
 
   depends_on = [aws_lambda_function.cpf_validator]
+}
+
+resource "aws_lambda_permission" "api_gateway_invoke_lambda" {
+  statement_id  = "AllowExecutionFromApiGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.cpf_validator.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.example.execution_arn}/*/*"
 }
 
 resource "aws_api_gateway_method" "post_method" {
