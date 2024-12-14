@@ -65,6 +65,7 @@ resource "aws_api_gateway_stage" "example_stage" {
 resource "random_string" "suffix" {
   length  = 8
   special = false
+  upper = false
 }
 
 resource "aws_s3_bucket" "lambda_bucket" {
