@@ -1,3 +1,10 @@
+
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
 resource "aws_api_gateway_rest_api" "example" {
   name        = "API Gateway Test"
   description = "API Gateway created from OpenAPI spec"
@@ -17,7 +24,7 @@ resource "aws_api_gateway_authorizer" "lambda_authorizer" {
   type                   = "REQUEST"
   authorizer_uri         = aws_lambda_function.cpf_validator.invoke_arn
   identity_source        = "method.request.header.Authorization"
-  authorizer_result_ttl_in_seconds = 0
+  authorizer_result_ttl_in_seconds = 300 # Cache de 5 minutos
 
   depends_on = [aws_lambda_function.cpf_validator]
 }
@@ -60,7 +67,7 @@ resource "aws_api_gateway_deployment" "example" {
 resource "aws_api_gateway_stage" "example_stage" {
   deployment_id = aws_api_gateway_deployment.example.id
   rest_api_id   = aws_api_gateway_rest_api.example.id
-  stage_name    = "dev" 
+  stage_name    = "dev"
   description   = "Development stage for the API Gateway"
 
   variables = {
@@ -68,12 +75,6 @@ resource "aws_api_gateway_stage" "example_stage" {
   }
 
   depends_on = [aws_api_gateway_deployment.example]
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-  upper   = false
 }
 
 resource "aws_s3_bucket" "lambda_bucket" {
@@ -112,7 +113,7 @@ resource "aws_s3_bucket_policy" "lambda_bucket_policy" {
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_execution_role_1"
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
         Action = "sts:AssumeRole"
