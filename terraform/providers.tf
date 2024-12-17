@@ -11,7 +11,7 @@ terraform {
     organization = "ACG-Terraform-Labs-Teste"
 
     workspaces {
-      name = "techchallenge-serverless"
+      name = "techchallenge-cluster"
     }
   }
 }
