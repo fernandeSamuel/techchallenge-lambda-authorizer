@@ -8,7 +8,7 @@ on:
         required: true
         type: choice
         options:
-        - lambda
+        - serverless
         
       action:
         description: "Escolha a ação (apply ou destroy)"
