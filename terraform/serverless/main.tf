@@ -177,7 +177,7 @@ resource "aws_lambda_function" "cpf_validator" {
   ]
 
   vpc_config {
-    subnet_ids         = data.terraform_remote_state.network.outputs.private_subnet_ids
+    subnet_ids         = data.terraform_remote_state.network.outputs.public_subnet_ids
     security_group_ids = [data.terraform_remote_state.network.outputs.aws_security_group_id]
   }
 }
